@@ -1,0 +1,35 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #0077cc;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+}
+
+main {
+    padding: 20px;
+}
+
+#news-feed, #alerts, #trend-analysis {
+    background: white;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+canvas {
+    width: 100%;
+    max-width: 600px;
+}
