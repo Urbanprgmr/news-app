@@ -1,59 +1,59 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const newsContainer = document.getElementById("news-container");
-    const alertContainer = document.getElementById("alert-container");
+    const BACKEND_URL = "https://your-backend-url.com";  // Replace with your actual backend URL
 
-    // Fetch News from a Public RSS Feed (Example: BBC)
-    const RSS_URL = "https://rss.bbc.co.uk/news/world/rss.xml";
-    
-    fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(RSS_URL)}`)
+    // Fetch News from Backend API
+    fetch(`${BACKEND_URL}/news`)
     .then(response => response.json())
     .then(data => {
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(data.contents, "text/xml");
-        const items = xml.querySelectorAll("item");
-
+        const newsContainer = document.getElementById("news-container");
         newsContainer.innerHTML = "";
-        items.forEach((item, index) => {
-            if (index < 5) { // Limit to 5 news items
-                const title = item.querySelector("title").textContent;
-                const link = item.querySelector("link").textContent;
-                
-                const newsItem = document.createElement("p");
-                newsItem.innerHTML = `<a href="${link}" target="_blank">${title}</a>`;
-                newsContainer.appendChild(newsItem);
+        data.forEach(news => {
+            const newsItem = document.createElement("p");
+            newsItem.textContent = news.title;
+            newsItem.style.color = news.sentiment === "negative" ? "red" : (news.sentiment === "positive" ? "green" : "black");
+            newsContainer.appendChild(newsItem);
+        });
+    })
+    .catch(error => {
+        document.getElementById("news-container").innerHTML = "<p>Failed to load news.</p>";
+    });
+
+    // Fetch Alerts from Backend API
+    fetch(`${BACKEND_URL}/alerts`)
+    .then(response => response.json())
+    .then(data => {
+        const alertContainer = document.getElementById("alert-container");
+        alertContainer.innerHTML = "";
+        data.forEach(alert => {
+            const alertItem = document.createElement("p");
+            alertItem.textContent = alert.message;
+            alertItem.style.fontWeight = "bold";
+            alertItem.style.color = alert.priority === "critical" ? "red" : "blue";
+            alertContainer.appendChild(alertItem);
+        });
+    })
+    .catch(error => {
+        document.getElementById("alert-container").innerHTML = "<p>Failed to load alerts.</p>";
+    });
+
+    // Fetch Trend Analysis from Backend API
+    fetch(`${BACKEND_URL}/trends`)
+    .then(response => response.json())
+    .then(data => {
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(data),
+                datasets: [{
+                    label: 'Trending Topics',
+                    data: Object.values(data),
+                    backgroundColor: ['blue', 'green', 'red', 'orange', 'purple']
+                }]
             }
         });
     })
     .catch(error => {
-        newsContainer.innerHTML = "<p>Failed to load news.</p>";
-    });
-
-    // Simulated Alerts (Static Data)
-    const alerts = [
-        { message: "Heavy rain expected in Malé", type: "weather" },
-        { message: "Major accident on main highway", type: "emergency" }
-    ];
-
-    alertContainer.innerHTML = "";
-    alerts.forEach(alert => {
-        const alertItem = document.createElement("p");
-        alertItem.textContent = alert.message;
-        alertItem.style.fontWeight = "bold";
-        alertItem.style.color = alert.type === "emergency" ? "red" : "blue";
-        alertContainer.appendChild(alertItem);
-    });
-
-    // Simulated Trend Analysis (Static Data)
-    const ctx = document.getElementById('trendChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Politics', 'Economy', 'Weather', 'Health', 'Tourism'],
-            datasets: [{
-                label: 'Trending Topics',
-                data: [12, 19, 7, 10, 15],
-                backgroundColor: ['blue', 'green', 'red', 'orange', 'purple']
-            }]
-        }
+        console.error("Failed to load trend analysis", error);
     });
 });
