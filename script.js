@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const BACKEND_URL = "https://bbd11f07-966b-4d98-8df1-3f1decd0ae91-00-11328kj5ylc50.sisko.replit.dev/";  // Replace with your actual backend URL
+    const BACKEND_URL = "https://news-app-backend-1-1lbr.onrender.com";  // Replace with your actual backend URL
 
     // Fetch News from Backend API
     fetch(`${BACKEND_URL}/news`)
