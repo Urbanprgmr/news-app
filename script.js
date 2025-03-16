@@ -1,27 +1,39 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Placeholder news data
-    const newsData = [
-        { title: "New Infrastructure Projects Announced", sentiment: "positive" },
-        { title: "Severe Weather Warning Issued", sentiment: "negative" },
-        { title: "Tourism Industry Reports Record Growth", sentiment: "positive" }
-    ];
-
     const newsContainer = document.getElementById("news-container");
-    newsContainer.innerHTML = "";
-    newsData.forEach(news => {
-        const newsItem = document.createElement("p");
-        newsItem.textContent = news.title;
-        newsItem.style.color = news.sentiment === "negative" ? "red" : (news.sentiment === "positive" ? "green" : "black");
-        newsContainer.appendChild(newsItem);
+    const alertContainer = document.getElementById("alert-container");
+
+    // Fetch News from a Public RSS Feed (Example: BBC)
+    const RSS_URL = "https://rss.bbc.co.uk/news/world/rss.xml";
+    
+    fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(RSS_URL)}`)
+    .then(response => response.json())
+    .then(data => {
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(data.contents, "text/xml");
+        const items = xml.querySelectorAll("item");
+
+        newsContainer.innerHTML = "";
+        items.forEach((item, index) => {
+            if (index < 5) { // Limit to 5 news items
+                const title = item.querySelector("title").textContent;
+                const link = item.querySelector("link").textContent;
+                
+                const newsItem = document.createElement("p");
+                newsItem.innerHTML = `<a href="${link}" target="_blank">${title}</a>`;
+                newsContainer.appendChild(newsItem);
+            }
+        });
+    })
+    .catch(error => {
+        newsContainer.innerHTML = "<p>Failed to load news.</p>";
     });
 
-    // Placeholder alert system
+    // Simulated Alerts (Static Data)
     const alerts = [
         { message: "Heavy rain expected in Malé", type: "weather" },
         { message: "Major accident on main highway", type: "emergency" }
     ];
 
-    const alertContainer = document.getElementById("alert-container");
     alertContainer.innerHTML = "";
     alerts.forEach(alert => {
         const alertItem = document.createElement("p");
@@ -31,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function() {
         alertContainer.appendChild(alertItem);
     });
 
-    // Placeholder trend analysis (chart)
+    // Simulated Trend Analysis (Static Data)
     const ctx = document.getElementById('trendChart').getContext('2d');
     new Chart(ctx, {
         type: 'bar',
